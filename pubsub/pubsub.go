@@ -7,6 +7,7 @@ import (
 )
 
 var EventStore []Event
+var Instance *PubSub
 
 type Event struct {
 	ID        uuid.UUID
@@ -58,5 +59,3 @@ func (ep *EventPublisher) PublishEvent(eventType string, data any) {
 
 	ep.PubSub.Publish(event)
 }
-
-var Instance *PubSub
