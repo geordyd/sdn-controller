@@ -93,8 +93,9 @@ func main() {
 		mux.HandleFunc("/getevents", func(w http.ResponseWriter, r *http.Request) {
 			events := pubsub.EventStore
 			for _, event := range events {
-				fmt.Fprintf(w, "%s: Type: %s, Data: %v\n",
+				fmt.Fprintf(w, "%s: ID: %v, Type: %s, Data: %v\n",
 					event.Timestamp.Format("2006-01-02 15:04:05"),
+					event.ID,
 					event.Type,
 					event.Data)
 			}
