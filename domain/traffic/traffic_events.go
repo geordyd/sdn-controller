@@ -11,3 +11,7 @@ type TrafficAllowed struct {
 type TrafficBlocked struct {
 	Packet Traffic
 }
+
+type TrafficDropped struct {
+	Packet Traffic
+}

@@ -26,7 +26,7 @@ This project implements an SDN controller using a Pub/Sub architecture to effici
 
 **Bounded Context:** `Traffic`  
 **Entities:** `Traffic`  
-**Domain Events:** `TrafficReceived`, `TrafficAllowed`, `TrafficBlocked`
+**Domain Events:** `TrafficReceived`, `TrafficAllowed`, `TrafficBlocked`, `TrafficDropped`
 
 ### Application Layer
 

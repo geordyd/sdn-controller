@@ -22,12 +22,14 @@ func main() {
 	trafficReceived := pubsub.Instance.Subscribe("TrafficReceived")
 	trafficAllowed := pubsub.Instance.Subscribe("TrafficAllowed")
 	trafficBlocked := pubsub.Instance.Subscribe("TrafficBlocked")
+	trafficDropped := pubsub.Instance.Subscribe("TrafficDropped")
 	ruleAdded := pubsub.Instance.Subscribe("RuleAdded")
 	ruleRemoved := pubsub.Instance.Subscribe("RuleRemoved")
 
 	go handlers.TrafficReceivedHandler(trafficReceived)
 	go handlers.TrafficAllowedHandler(trafficAllowed)
 	go handlers.TrafficBlockedHandler(trafficBlocked)
+	go handlers.TrafficDroppedHandler(trafficDropped)
 	go handlers.RuleAddedHandler(ruleAdded)
 	go handlers.RuleRemovedHandler(ruleRemoved)
 
@@ -41,11 +43,11 @@ func main() {
 		mux := http.NewServeMux()
 
 		mux.HandleFunc("/addrule/{state}/{port}", func(w http.ResponseWriter, r *http.Request) {
-			var allowed bool
+			var allowed string
 			if r.PathValue("state") == "allow" {
-				allowed = true
+				allowed = r.PathValue("state")
 			} else if r.PathValue("state") == "deny" {
-				allowed = false
+				allowed = r.PathValue("state")
 			} else {
 				http.Error(w, "Invalid state", http.StatusBadRequest)
 				return

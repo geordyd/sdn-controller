@@ -2,12 +2,12 @@ package policy
 
 type Rule struct {
 	Port    int
-	Allowed bool
+	Allowed string
 }
 
 type Policy struct {
 	ID    string
-	Rules map[int]bool
+	Rules map[int]string
 }
 
 var PolicyStore Policy
@@ -15,7 +15,7 @@ var PolicyStore Policy
 func NewPolicy(id string) {
 	PolicyStore = Policy{
 		ID:    id,
-		Rules: make(map[int]bool),
+		Rules: make(map[int]string),
 	}
 }
 
