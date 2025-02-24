@@ -1,10 +1,15 @@
 package pubsub
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 var EventStore []Event
 
 type Event struct {
+	ID        uuid.UUID
 	Type      string
 	Timestamp time.Time
 	Data      any
@@ -45,6 +50,7 @@ func NewEventPublisher(pubSub *PubSub) *EventPublisher {
 
 func (ep *EventPublisher) PublishEvent(eventType string, data any) {
 	event := Event{
+		ID:        uuid.New(),
 		Type:      eventType,
 		Timestamp: time.Now(),
 		Data:      data,
