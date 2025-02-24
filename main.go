@@ -33,38 +33,9 @@ func main() {
 
 	eventPublisher := pubsub.NewEventPublisher(pubsub.Instance)
 
-	go func() {
-		for {
-			trafficEvent := traffic.TrafficReceived{
-				Packet: traffic.Traffic{
-					ID:              uuid.New(),
-					SourceIP:        "10.13.17.1",
-					DestinationPort: 80,
-				},
-			}
-			eventPublisher.PublishEvent("TrafficReceived", trafficEvent)
-
-			trafficEvent2 := traffic.TrafficReceived{
-				Packet: traffic.Traffic{
-					ID:              uuid.New(),
-					SourceIP:        "10.13.17.1",
-					DestinationPort: 443,
-				},
-			}
-			eventPublisher.PublishEvent("TrafficReceived", trafficEvent2)
-
-			trafficEvent3 := traffic.TrafficReceived{
-				Packet: traffic.Traffic{
-					ID:              uuid.New(),
-					SourceIP:        "10.13.17.1",
-					DestinationPort: 23,
-				},
-			}
-			eventPublisher.PublishEvent("TrafficReceived", trafficEvent3)
-
-			time.Sleep(2 * time.Second)
-		}
-	}()
+	go generateTraffic("10.13.37.1", 80, 1, eventPublisher)
+	go generateTraffic("10.13.37.1", 443, 5, eventPublisher)
+	go generateTraffic("10.13.37.1", 23, 10, eventPublisher)
 
 	go func() {
 		mux := http.NewServeMux()
@@ -128,4 +99,18 @@ func main() {
 	}()
 
 	select {}
+}
+
+func generateTraffic(sourceIP string, destinationPort int, interval int, eventPublisher *pubsub.EventPublisher) {
+	for {
+		trafficEvent := traffic.TrafficReceived{
+			Packet: traffic.Traffic{
+				ID:              uuid.New(),
+				SourceIP:        sourceIP,
+				DestinationPort: destinationPort,
+			},
+		}
+		eventPublisher.PublishEvent("TrafficReceived", trafficEvent)
+		time.Sleep(time.Duration(interval) * time.Second)
+	}
 }
