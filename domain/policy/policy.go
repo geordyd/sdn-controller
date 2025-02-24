@@ -1,12 +1,10 @@
 package policy
 
-// Value Object
 type Rule struct {
 	Port    int
 	Allowed bool
 }
 
-// Aggregate
 type Policy struct {
 	ID    string
 	Rules map[int]bool
