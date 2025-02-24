@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"fmt"
+	"sdn/application/services"
 	"sdn/domain/traffic"
-	"sdn/pubsub"
-	"sdn/services"
+	"sdn/infrastructure/pubsub"
 )
 
 func TrafficReceivedHandler(ch <-chan pubsub.Event) {

@@ -3,7 +3,7 @@ package handlers
 import (
 	"fmt"
 	"sdn/domain/policy"
-	"sdn/pubsub"
+	"sdn/infrastructure/pubsub"
 )
 
 func RuleAddedHandler(ch <-chan pubsub.Event) {

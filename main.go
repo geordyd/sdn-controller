@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"sdn/application/handlers"
 	"sdn/domain/policy"
 	"sdn/domain/traffic"
-	"sdn/handlers"
-	"sdn/pubsub"
+	"sdn/infrastructure/pubsub"
 	"strconv"
 	"time"
 
