@@ -14,8 +14,7 @@ import (
 )
 
 func main() {
-
-	policy.NewPolicy(uuid.New().String())
+	policy.PolicyStore = policy.NewPolicy(uuid.New().String())
 
 	pubsub.Instance = pubsub.NewPubSub()
 

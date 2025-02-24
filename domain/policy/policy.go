@@ -12,8 +12,8 @@ type Policy struct {
 
 var PolicyStore Policy
 
-func NewPolicy(id string) {
-	PolicyStore = Policy{
+func NewPolicy(id string) Policy {
+	return Policy{
 		ID:    id,
 		Rules: make(map[int]string),
 	}
