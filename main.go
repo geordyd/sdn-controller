@@ -72,7 +72,6 @@ func main() {
 		})
 
 		mux.HandleFunc("/removerule/{port}", func(w http.ResponseWriter, r *http.Request) {
-
 			port, err := strconv.Atoi(r.PathValue("port"))
 			if err != nil {
 				http.Error(w, "Invalid port", http.StatusBadRequest)

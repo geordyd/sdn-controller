@@ -15,13 +15,13 @@ type Event struct {
 
 type PubSub struct {
 	subscribers map[string][]chan<- Event
-	EventStore  []Event
+	EventStore  []*Event
 }
 
 func NewPubSub() *PubSub {
 	return &PubSub{
 		subscribers: make(map[string][]chan<- Event),
-		EventStore:  []Event{},
+		EventStore:  []*Event{},
 	}
 }
 
@@ -31,10 +31,10 @@ func (ps *PubSub) Subscribe(eventType string) <-chan Event {
 	return ch
 }
 
-func (ps *PubSub) Publish(event Event) {
+func (ps *PubSub) Publish(event *Event) {
 	ps.EventStore = append(ps.EventStore, event)
 	for _, ch := range ps.subscribers[event.Type] {
-		ch <- event
+		ch <- *event
 	}
 }
 
@@ -56,5 +56,5 @@ func (ep *EventPublisher) PublishEvent(eventType string, data any) {
 		Data:      data,
 	}
 
-	ep.PubSub.Publish(event)
+	ep.PubSub.Publish(&event)
 }

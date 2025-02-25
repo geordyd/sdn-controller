@@ -13,7 +13,7 @@ func RuleAddedHandler(ch <-chan pubsub.Event) {
 			fmt.Println("Invalid event data")
 			continue
 		}
-		fmt.Printf("%s: Type: %s, Allowed: %v, Port: %d\n",
+		fmt.Printf("%s: Type: %s, Action: %v, Port: %d\n",
 			event.Timestamp.Format("2006-01-02 15:04:05"),
 			event.Type,
 			rule.Rule.Action,
@@ -28,10 +28,9 @@ func RuleRemovedHandler(ch <-chan pubsub.Event) {
 			fmt.Println("Invalid event data")
 			continue
 		}
-		fmt.Printf("%s: Type: %s, Allowed: %v, Port: %d\n",
+		fmt.Printf("%s: Type: %s, Port: %d\n",
 			event.Timestamp.Format("2006-01-02 15:04:05"),
 			event.Type,
-			rule.Rule.Action,
 			rule.Rule.Port)
 	}
 }
