@@ -9,7 +9,6 @@ import (
 )
 
 func TrafficReceivedHandler(ch <-chan pubsub.Event, eventPublisher *pubsub.EventPublisher, policyStore *policy.Policy) {
-
 	for event := range ch {
 		trafficData, ok := event.Data.(traffic.TrafficReceived)
 		if !ok {
