@@ -1,8 +1,8 @@
 package policy
 
 type Rule struct {
-	Port    int
-	Allowed string
+	Port   int
+	Action string
 }
 
 type Policy struct {
@@ -10,17 +10,15 @@ type Policy struct {
 	Rules map[int]string
 }
 
-var PolicyStore Policy
-
-func NewPolicy(id string) Policy {
-	return Policy{
+func NewPolicy(id string) *Policy {
+	return &Policy{
 		ID:    id,
 		Rules: make(map[int]string),
 	}
 }
 
 func (p *Policy) AddRule(rule Rule) {
-	p.Rules[rule.Port] = rule.Allowed
+	p.Rules[rule.Port] = rule.Action
 }
 
 func (p *Policy) RemoveRule(rule Rule) {

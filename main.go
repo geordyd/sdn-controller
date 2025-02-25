@@ -14,25 +14,25 @@ import (
 )
 
 func main() {
-	policy.PolicyStore = policy.NewPolicy(uuid.New().String())
 
-	pubsub.Instance = pubsub.NewPubSub()
+	policyStore := policy.NewPolicy(uuid.New().String())
 
-	trafficReceived := pubsub.Instance.Subscribe("TrafficReceived")
-	trafficAllowed := pubsub.Instance.Subscribe("TrafficAllowed")
-	trafficBlocked := pubsub.Instance.Subscribe("TrafficBlocked")
-	trafficDropped := pubsub.Instance.Subscribe("TrafficDropped")
-	ruleAdded := pubsub.Instance.Subscribe("RuleAdded")
-	ruleRemoved := pubsub.Instance.Subscribe("RuleRemoved")
+	ps := pubsub.NewPubSub()
+	eventPublisher := pubsub.NewEventPublisher(ps)
 
-	go handlers.TrafficReceivedHandler(trafficReceived)
+	trafficReceived := ps.Subscribe("TrafficReceived")
+	trafficAllowed := ps.Subscribe("TrafficAllowed")
+	trafficBlocked := ps.Subscribe("TrafficBlocked")
+	trafficDropped := ps.Subscribe("TrafficDropped")
+	ruleAdded := ps.Subscribe("RuleAdded")
+	ruleRemoved := ps.Subscribe("RuleRemoved")
+
+	go handlers.TrafficReceivedHandler(trafficReceived, eventPublisher, policyStore)
 	go handlers.TrafficAllowedHandler(trafficAllowed)
 	go handlers.TrafficBlockedHandler(trafficBlocked)
 	go handlers.TrafficDroppedHandler(trafficDropped)
 	go handlers.RuleAddedHandler(ruleAdded)
 	go handlers.RuleRemovedHandler(ruleRemoved)
-
-	eventPublisher := pubsub.NewEventPublisher(pubsub.Instance)
 
 	go generateTraffic("10.13.37.1", 80, 1, eventPublisher)
 	go generateTraffic("10.13.37.1", 443, 5, eventPublisher)
@@ -41,14 +41,14 @@ func main() {
 	go func() {
 		mux := http.NewServeMux()
 
-		mux.HandleFunc("/addrule/{state}/{port}", func(w http.ResponseWriter, r *http.Request) {
+		mux.HandleFunc("/addrule/{action}/{port}", func(w http.ResponseWriter, r *http.Request) {
 			var allowed string
-			if r.PathValue("state") == "allow" {
-				allowed = r.PathValue("state")
-			} else if r.PathValue("state") == "deny" {
-				allowed = r.PathValue("state")
+			if r.PathValue("action") == "allow" {
+				allowed = r.PathValue("action")
+			} else if r.PathValue("action") == "deny" {
+				allowed = r.PathValue("action")
 			} else {
-				http.Error(w, "Invalid state", http.StatusBadRequest)
+				http.Error(w, "Invalid action", http.StatusBadRequest)
 				return
 			}
 
@@ -59,14 +59,14 @@ func main() {
 			}
 
 			rule := policy.Rule{
-				Allowed: allowed,
-				Port:    port,
+				Action: allowed,
+				Port:   port,
 			}
 
-			policy.PolicyStore.AddRule(rule)
+			policyStore.AddRule(rule)
 
 			eventPublisher.PublishEvent("RuleAdded", policy.RuleAdded{
-				PolicyID: policy.PolicyStore.ID,
+				PolicyID: policyStore.ID,
 				Rule:     rule,
 			})
 		})
@@ -83,16 +83,16 @@ func main() {
 				Port: port,
 			}
 
-			policy.PolicyStore.RemoveRule(rule)
+			policyStore.RemoveRule(rule)
 
 			eventPublisher.PublishEvent("RuleRemoved", policy.RuleRemoved{
-				PolicyID: policy.PolicyStore.ID,
+				PolicyID: policyStore.ID,
 				Rule:     rule,
 			})
 		})
 
 		mux.HandleFunc("/getevents", func(w http.ResponseWriter, r *http.Request) {
-			events := pubsub.EventStore
+			events := ps.EventStore
 			for _, event := range events {
 				fmt.Fprintf(w, "%s: ID: %v, Type: %s, Data: %v\n",
 					event.Timestamp.Format("2006-01-02 15:04:05"),

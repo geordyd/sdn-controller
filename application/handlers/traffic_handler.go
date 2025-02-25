@@ -3,13 +3,12 @@ package handlers
 import (
 	"fmt"
 	"sdn/application/services"
+	"sdn/domain/policy"
 	"sdn/domain/traffic"
 	"sdn/infrastructure/pubsub"
 )
 
-func TrafficReceivedHandler(ch <-chan pubsub.Event) {
-
-	eventPublisher := pubsub.NewEventPublisher(pubsub.Instance)
+func TrafficReceivedHandler(ch <-chan pubsub.Event, eventPublisher *pubsub.EventPublisher, policyStore *policy.Policy) {
 
 	for event := range ch {
 		trafficData, ok := event.Data.(traffic.TrafficReceived)
@@ -23,7 +22,7 @@ func TrafficReceivedHandler(ch <-chan pubsub.Event) {
 			trafficData.Packet.SourceIP,
 			trafficData.Packet.DestinationPort)
 
-		switch services.CheckPolicy(trafficData.Packet) {
+		switch services.CheckPolicy(trafficData.Packet, policyStore) {
 		case "Allowed":
 			trafficAllowedEvent := traffic.TrafficAllowed(trafficData)
 			eventPublisher.PublishEvent("TrafficAllowed", trafficAllowedEvent)

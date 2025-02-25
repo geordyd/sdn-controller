@@ -6,9 +6,6 @@ import (
 	"github.com/google/uuid"
 )
 
-var EventStore []Event
-var Instance *PubSub
-
 type Event struct {
 	ID        uuid.UUID
 	Type      string
@@ -18,11 +15,13 @@ type Event struct {
 
 type PubSub struct {
 	subscribers map[string][]chan<- Event
+	EventStore  []Event
 }
 
 func NewPubSub() *PubSub {
 	return &PubSub{
 		subscribers: make(map[string][]chan<- Event),
+		EventStore:  []Event{},
 	}
 }
 
@@ -33,7 +32,7 @@ func (ps *PubSub) Subscribe(eventType string) <-chan Event {
 }
 
 func (ps *PubSub) Publish(event Event) {
-	EventStore = append(EventStore, event)
+	ps.EventStore = append(ps.EventStore, event)
 	for _, ch := range ps.subscribers[event.Type] {
 		ch <- event
 	}

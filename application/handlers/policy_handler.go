@@ -16,10 +16,11 @@ func RuleAddedHandler(ch <-chan pubsub.Event) {
 		fmt.Printf("%s: Type: %s, Allowed: %v, Port: %d\n",
 			event.Timestamp.Format("2006-01-02 15:04:05"),
 			event.Type,
-			rule.Rule.Allowed,
+			rule.Rule.Action,
 			rule.Rule.Port)
 	}
 }
+
 func RuleRemovedHandler(ch <-chan pubsub.Event) {
 	for event := range ch {
 		rule, ok := event.Data.(policy.RuleRemoved)
@@ -30,7 +31,7 @@ func RuleRemovedHandler(ch <-chan pubsub.Event) {
 		fmt.Printf("%s: Type: %s, Allowed: %v, Port: %d\n",
 			event.Timestamp.Format("2006-01-02 15:04:05"),
 			event.Type,
-			rule.Rule.Allowed,
+			rule.Rule.Action,
 			rule.Rule.Port)
 	}
 }
